@@ -4,12 +4,29 @@ help([[Module which sets the PATH variable for user instaled miniconda
        To check the available packages: conda list
 ]])
 -- change myanapath if the installation is in a different place in your home
+-- note that this is a relative path from the base of your home directory
 local myanapath = "software/pkg/miniconda3"
+-- if you want to share this miniconda installation with others, use the full
+-- path
+--local myanapath = "/uufs/chpc.utah.edu/common/home/u0123456/software/pkg/miniconda3"
+
+-- optionally modify the module metadata 
+local version = myModuleVersion ()
+whatis("Name         : Miniconda " .. version .. " Python 3")
+whatis("Version      : " .. version .. " & Python 3")
+whatis("Category     : Compiler")
+whatis("Description  : Python environment")
+whatis("URL          : https://conda.io/miniconda")
+whatis("Installed on : --- ")
+whatis("Modified on  : --- ")
+whatis("Installed by : ---")
 
 -- don't change anything below
-local home = os.getenv("HOME")
-local version = myModuleVersion ()
-local myana = pathJoin(home,myanapath)
+if (string.find(myanapath,"uufs") == nil) then
+  myana = pathJoin(os.getenv("HOME"),myanapath)
+else
+  myana = myanapath
+end
 setenv("PYTHONPREFIX",myana)
 prepend_path("PATH",pathJoin(myana,"bin"))
 
@@ -37,13 +54,5 @@ if (myShellType() == "sh") then
   execute{cmd=cmd, modeA={"unload"}}
 end
 
-whatis("Name         : Miniconda " .. version .. " Python 3")
-whatis("Version      : " .. version .. " & Python 3")
-whatis("Category     : Compiler")
-whatis("Description  : Python environment")
-whatis("URL          : https://conda.io/miniconda")
-whatis("Installed on : --- ")
-whatis("Modified on  : --- ")
-whatis("Installed by : ---")
 
 family("python")
